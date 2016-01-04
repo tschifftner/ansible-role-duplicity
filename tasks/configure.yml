@@ -1,0 +1,88 @@
+---
+- name: 'Ensure /var/log/duplicity.log exists and is writable'
+  file:
+    path: /var/log/duplicity.log
+    owner: root
+    group: root
+    mode: 0755
+    state: touch
+  changed_when: false
+
+- name: 'Ensure /etc/duplicity exists and is protected'
+  file:
+    path: /etc/duplicity
+    owner: root
+    group: root
+    mode: 0750
+    state: directory
+
+- name: 'Ensure /etc/duplicity/exclude.list exists and is protected'
+  copy:
+    src: exclude.list
+    dest: /etc/duplicity/exclude.list
+    owner: root
+    group: root
+    mode: 0750
+
+- name: 'Ensure backup script is latest version'
+  copy:
+    src: duptools.sh
+    dest: /usr/local/sbin/duptools
+    owner: root
+    group: root
+    mode: 0550
+
+- name: "Add servers to known hosts. Use 'ssh-keyscan -t rsa example.org' to get fingerprint"
+  known_hosts:
+    host: "{{ item.host }}"
+    key: "{{ item.key }}"
+    state: "{{ item.state }}"
+    path: /root/.ssh/known_hosts
+  with_items: duplicity_known_hosts
+
+- name: 'Add environment variables (NOT SECURE!)'
+  lineinfile:
+    dest: /etc/environment
+    regexp: "^export {{ item.key }}="
+    line: "export {{ item.key }}='{{ item.value }}'"
+    owner: root
+    group: root
+    mode: 0644
+  with_dict: duplicity_environment_vars
+
+- name: 'Add duplicity config'
+  lineinfile:
+    dest: /etc/duplicity/duplicity.conf
+    regexp: "^export {{ item.key }}="
+    line: "export {{ item.key }}='{{ item.value }}'"
+    owner: root
+    group: root
+    mode: 0640
+    create: yes
+    state: present
+  with_dict: duplicity_config_vars
+
+- name: 'Add custom duplicity scripts'
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    backup: "{{ item.backup | default('yes') }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode | default(0550) }}"
+  with_items: duplicity_backup_scripts
+
+- name: 'Add custom crontab jobs for duplicity'
+  cron:
+    user: "{{ item.user }}"
+    name: "{{ item.name }}"
+    day: "{{ item.day | default('*') }}"
+    hour: "{{ item.hour | default('*') }}"
+    minute: "{{ item.minute | default('*') }}"
+    month: "{{ item.month | default('*') }}"
+    weekday: "{{ item.weekday | default('*') }}"
+    job: "{% if item.source is defined %}source {{ item.source }} && {% endif %} {{ item.command }}"
+    state: "{{ item.state | default('present') }}"
+    cron_file: "{{ item.cron_file | default(omit) }}"
+    special_time: "{{ item.special_time | default(omit) }}"
+  with_items: duplicity_cronjobs

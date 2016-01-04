@@ -1,0 +1,21 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: Tobias Schifftner
+  description: Installs duplicity from source and handles backup tasks on Debian/Ubuntu linux servers.
+  company: ambimax® GmbH
+  license: MIT
+  min_ansible_version: 1.9
+  platforms:
+  - name: Debian
+    versions:
+    - jessie
+  - name: Ubuntu
+    versions:
+    - trusty
+  galaxy_tags:
+    - debian
+    - ubuntu
+    - duplicity
+    - backup

@@ -1,0 +1,25 @@
+---
+duplicity_version: "0.7.06"
+
+duplicity_backup_scripts: []
+#- { src: duplicity_script.sh, dest: /usr/local/sbin/duplicity_script, backup: yes, user: root, group: root, mode: 0500 }
+
+duplicity_config_vars: {}
+#  PASSPHRASE: 'YOUR_PASSPHRASE'
+#  FTP_PASSWORD: 'YOUR_FTP_PASSWORD'
+
+# Be careful! This vars can be seen by everyone having ssh access!
+# Better use duplicity_config_vars
+duplicity_environment_vars: {}
+#  PASSPHRASE: 'YOUR_PASSPHRASE'
+#  FTP_PASSWORD: 'YOUR_FTP_PASSWORD'
+
+duplicity_cronjobs: []
+#  - user: root
+#    name: "Webserver"
+#    hour: 4
+#    minute: 0
+#    command: pwd
+#    state: absent
+
+duplicity_install_duptools: false
