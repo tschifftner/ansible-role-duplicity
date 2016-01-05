@@ -18,7 +18,7 @@ addons:
     - python-lockfile
 
 before_install:
-  - apt-get update
+  - sudo apt-get update -qq
 
 install:
   # Install ansible
@@ -50,6 +50,8 @@ script:
   # ansible-lint checks for best practice
   - ansible-lint tests/$SITE
 
+  - pwd
+
   # Check if duplicity is available
   - >
     duplicity --version
@@ -58,24 +60,24 @@ script:
 
   # Check result of cronjob
   - >
-    test -d /tmp/duplicity-backup
+    sudo test -d /tmp/duplicity-backup
     && (echo 'duplicity cron failed' && exit 0)
     || (echo 'duplicity cron was successful' && exit 1)
 
   # Verify backup
-  - duplicity verify file:///tmp/duplicity-backup /etc
+  - sudo duplicity verify file:///tmp/duplicity-backup /etc
 
   # Try to restore
-  - duplicity $ENCRYPTION file:///tmp/duplicity-backup /tmp/duplicity-restore && sudo test -d /tmp/duplicity-restore/skel
+  - sudo duplicity $ENCRYPTION file:///tmp/duplicity-backup /tmp/duplicity-restore && sudo test -d /tmp/duplicity-restore/skel
 
   # Check result of restore process
   - >
-    test -d /tmp/duplicity-restore
+    sudo test -d /tmp/duplicity-restore
     && (echo 'duplicity cron failed' && exit 0)
     || (echo 'duplicity cron was successful' && exit 1)
 
   # Check if help script exists
-  - test -d /usr/local/sbin/duptools
+  - sudo test -d /usr/local/sbin/duptools
 
 after_failure:
   - crontab -l
