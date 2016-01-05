@@ -78,6 +78,48 @@ It's recommended to put all vars in an external file.
 
 This will always result in changed!      
       
+## GPG Encryption
+
+### Generate GPG Key-Pair
+
+To generate gpg keys use the following snippet:
+      
+```
+gpg --batch --gen-key <<EOF
+%echo Generating a GPG key
+Key-Type: RSA
+Key-Length: 4096
+Subkey-Type: RSA
+Subkey-Length: 4096
+Name-Real: Duplicity Backup
+Name-Comment: Used for backup encryption
+Name-Email: duplicity@localhost
+Expire-Date: 0
+Passphrase: ThisShouldBeYourPersonalUniquePassphrase
+%commit
+%echo Done
+EOF
+```      
+      
+### Export public key
+      
+```
+gpg --output FB37DF3B.public.asc --armor --export FB37DF3B
+```      
+
+### Export owner trust
+      
+```
+gpg --export-ownertrust > ownertrust.txt
+```      
+
+### Export private key
+      
+```
+gpg --output FB37DF3B.private.asc --armor --export-secret-key FB37DF3B
+```      
+
+      
 ## License
 
 MIT / BSD

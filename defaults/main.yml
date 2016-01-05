@@ -22,4 +22,6 @@ duplicity_cronjobs: []
 #    command: pwd
 #    state: absent
 
-duplicity_install_duptools: false
+duplicity_gpg_public_keys: []
+duplicity_gpg_ownertrusts: []
+duplicity_gpg_private_keys: []

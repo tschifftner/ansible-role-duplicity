@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# This script needs to be renewed
+#
+
 # Do not let this script run more than once
 [ `ps axu | grep -v "grep" | grep --count "duplicity"` -gt 0 ] && exit 1
 

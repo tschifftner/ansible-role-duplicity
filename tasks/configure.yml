@@ -32,15 +32,16 @@
     group: root
     mode: 0550
 
-- name: "Add servers to known hosts. Use 'ssh-keyscan -t rsa example.org' to get fingerprint"
+- name: "Add servers to known hosts. Use 'ssh-keyscan -t rsa example.org' to get server key"
   known_hosts:
     host: "{{ item.host }}"
     key: "{{ item.key }}"
     state: "{{ item.state }}"
     path: /root/.ssh/known_hosts
   with_items: duplicity_known_hosts
+  when: duplicity_known_hosts is defined and len(duplicity_known_hosts) > 0
 
-- name: 'Add environment variables (NOT SECURE!)'
+- name: 'Add environment variables (NOT SECURE! Visible to ALL users)'
   lineinfile:
     dest: /etc/environment
     regexp: "^export {{ item.key }}="
