@@ -13,7 +13,7 @@
         group: root
         minute: '*/2'
         source: /etc/duplicity/duplicity.conf
-        command: $(which duplicity) $DEFAULT_PARAMS --include /etc --full-if-older-than 1M --exclude '**' / $SERVER
+        command: $(which duplicity) --no-encryption $DEFAULT_PARAMS --include /etc --full-if-older-than 1M --exclude '**' / $SERVER
 
   roles:
     - ansible-role-duplicity
