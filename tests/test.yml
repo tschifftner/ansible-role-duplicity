@@ -1,5 +1,19 @@
 ---
 - hosts: localhost
   remote_user: root
+
+  vars:
+    duplicity_config_vars:
+      SERVER: 'file:///tmp/duplicity-backup/'
+      DEFAULT_PARAMS: '--verbosity info --exclude-device-files --exclude-other-filesystems --exclude-if-present .duplicity-ignore'
+
+    duplicity_cronjobs:
+      - name: 'Backup /etc'
+        user: root
+        group: root
+        minute: '*/2'
+        source: /etc/duplicity/duplicity.conf
+        command: $(which duplicity) $DEFAULT_PARAMS --include /etc --full-if-older-than 1M --exclude '**' / $SERVER
+
   roles:
     - ansible-role-duplicity
