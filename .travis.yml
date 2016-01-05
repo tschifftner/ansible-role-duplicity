@@ -21,7 +21,7 @@ before_install:
   - sudo apt-get update -qq
 
   # lockfile is not allowed to be installed, therefore we install a previous version of duplicity to get lockfile also
-  - sudo apt-get install duplicity
+  - sudo apt-get install -y duplicity
 
 install:
   # Install ansible
