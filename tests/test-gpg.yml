@@ -4,11 +4,11 @@
 
   vars:
     duplicity_gpg_public_keys:
-      - tests/files/91F29F5F.public.asc
+      - ~/tests/files/91F29F5F.public.asc
     duplicity_gpg_ownertrusts:
-      - tests/files/ownertrust.txt
+      - ~/tests/files/ownertrust.txt
     duplicity_gpg_private_keys:
-      - tests/files/91F29F5F.private.asc
+      - ~/tests/files/91F29F5F.private.asc
 
     duplicity_config_vars:
       SERVER: 'file:///tmp/duplicity-backup/'
