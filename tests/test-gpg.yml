@@ -15,6 +15,10 @@
       DEFAULT_PARAMS: '--verbosity info --exclude-device-files --exclude-other-filesystems --exclude-if-present .duplicity-ignore'
       PASSPHRASE: 'ThisShouldBeYourPersonalUniquePassphrase'
 
+    # Used for travis restore test
+    duplicity_environment_vars:
+      PASSPHRASE: 'ThisShouldBeYourPersonalUniquePassphrase'
+
     duplicity_cronjobs:
       - name: 'Backup /etc'
         user: root

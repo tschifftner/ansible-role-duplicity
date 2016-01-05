@@ -48,7 +48,7 @@ script:
 
   # Check if duplicity is available
   - >
-    duplicity --version
+    $(which duplicity) --version
     && (echo 'duplicity is installed' && exit 0)
     || (echo 'duplicity is not installed' && exit 1)
 
