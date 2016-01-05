@@ -52,7 +52,8 @@ script:
     || (echo 'duplicity is not installed' && exit 1)
 
   # Check result of cronjob
-  - [ "$(ls -A /tmp/duplicity-backup/)" ]
+  - >
+    sudo test -d /tmp/duplicity-backup
     && (echo 'duplicity cron failed' && exit 0)
     || (echo 'duplicity cron was successful' && exit 1)
 
@@ -63,13 +64,14 @@ script:
   - sudo duplicity file:///tmp/duplicity-backup /tmp/duplicity-restore && sudo test -d /tmp/duplicity-restore/skel
 
   # Check result of restore process
-  - [ "$(ls -A /tmp/duplicity-backup/restore)" ]
+  - >
+    [ "$(ls -A /tmp/duplicity-backup/restore)" ]
     && (echo 'duplicity cron failed' && exit 0)
     || (echo 'duplicity cron was successful' && exit 1)
 
   # Check if help script exists
   - sudo test -d /usr/local/sbin/duptools
-  
+
 after_failure:
   - crontab -l
   - sudo crontab -l
