@@ -15,6 +15,7 @@ addons:
   apt:
     packages:
     - python-pip
+    - python-lockfile
 
 install:
   # Install ansible
@@ -48,7 +49,7 @@ script:
 
   # Check if duplicity is available
   - >
-    $(which duplicity) --version
+    duplicity --version
     && (echo 'duplicity is installed' && exit 0)
     || (echo 'duplicity is not installed' && exit 1)
 
