@@ -7,7 +7,8 @@ sudo: required
 dist: trusty
 
 env:
-  - SITE=test.yml ANSIBLE_VERSION=1.9.4
+  - SITE=test.yml ANSIBLE_VERSION=1.9.4 ENCRYPTION='--no-encryption'
+  - SITE=test-gpg.yml ANSIBLE_VERSION=1.9.4 ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase'
 
 # Install ansible
 addons:
@@ -61,7 +62,7 @@ script:
   - sudo duplicity verify file:///tmp/duplicity-backup /etc
 
   # Try to restore
-  - sudo duplicity --no-encryption file:///tmp/duplicity-backup /tmp/duplicity-restore && sudo test -d /tmp/duplicity-restore/skel
+  - sudo duplicity $ENCRYPTION file:///tmp/duplicity-backup /tmp/duplicity-restore && sudo test -d /tmp/duplicity-restore/skel
 
   # Check result of restore process
   - >
@@ -77,6 +78,7 @@ after_failure:
   - sudo crontab -l
   - ls -la /tmp/duplicity-backup
   - ls -la /tmp/duplicity-restore
+  - ansible -i 127.0.0.1, -m setup all -c local
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
