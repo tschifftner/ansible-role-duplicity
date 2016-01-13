@@ -83,6 +83,10 @@ script:
   - sudo test -d /usr/local/sbin/duptools
 
 after_failure:
+  - echo pwd
+  - ls -l
+  - cat ansible.cfg
+  - cat /home/travis/build/tschifftner/travis-tests/ansible.cfg
   - crontab -l
   - sudo crontab -l
   - ls -la /tmp/duplicity-backup
@@ -90,4 +94,5 @@ after_failure:
   - ansible -i 127.0.0.1, -m setup all -c local
 
 notifications:
+  slack: ambimax:2MlPTX9bY9aPxCPhJGxHKIT6
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
