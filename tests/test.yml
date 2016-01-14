@@ -11,7 +11,7 @@
       - name: 'Backup /etc'
         user: root
         group: root
-        minute: '*/2'
+        minute: '*'
         source: /etc/duplicity/duplicity.conf
         command: $(which duplicity) --no-encryption $DEFAULT_PARAMS --include /etc --full-if-older-than 1M --exclude '**' / $SERVER
 
