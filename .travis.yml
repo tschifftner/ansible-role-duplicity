@@ -20,9 +20,6 @@ addons:
 before_install:
   - sudo apt-get update -qq
 
-  # lockfile is not allowed to be installed, therefore we install a previous version of duplicity to get lockfile also
-  - sudo apt-get install -y duplicity
-
 install:
   # Install ansible
   - pip install ansible==$ANSIBLE_VERSION
@@ -52,8 +49,6 @@ script:
 
   # ansible-lint checks for best practice
   - ansible-lint tests/$SITE
-
-  - pwd
 
   # Check if duplicity is available
   - >
