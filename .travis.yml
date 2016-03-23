@@ -16,11 +16,6 @@ env:
   - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.2
   - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.1
   - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.0.1
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.8.4
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.8.3
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.8.2
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.8.1
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.8
 
 #  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=latest
 #  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=2.0.1.0
@@ -32,14 +27,12 @@ env:
 #  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.2
 #  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.1
 #  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.0.1
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.8.4
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.8.3
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.8.2
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.8.1
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.8
 
-#matrix:
-#  allow_failures:
+matrix:
+  allow_failures:
+    - env: SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.2
+    - env: SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.1
+    - env: SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.0
 
 branches:
   only:
@@ -92,7 +85,7 @@ script:
     && (echo 'duplicity is installed' && exit 0)
     || (echo 'duplicity is not installed' && exit 1)
 
-# Other tests are not supported on travis platform
+# Other tests are currently not supported on travis platform
 #
 #  # sleep 2 minutes to wait for cronjob
 #  - sleep 2m
