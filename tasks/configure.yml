@@ -1,10 +1,16 @@
 ---
+- name: reconfigure dash to bash
+  file:
+    dest: /bin/sh
+    src: bash
+    state: link
+
 - name: 'Ensure /var/log/duplicity.log exists and is writable'
   file:
     path: /var/log/duplicity.log
     owner: root
     group: root
-    mode: 0755
+    mode: '0755'
     state: touch
   changed_when: false
 
@@ -13,16 +19,16 @@
     path: /etc/duplicity
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
     state: directory
 
 - name: 'Ensure /etc/duplicity/exclude.list exists and is protected'
-  copy:
+  template:
     src: exclude.list
     dest: /etc/duplicity/exclude.list
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 - name: 'Ensure backup script is latest version'
   copy:
@@ -30,7 +36,7 @@
     dest: /usr/local/sbin/duptools
     owner: root
     group: root
-    mode: 0550
+    mode: '0550'
 
 - name: "Add servers to known hosts. Use 'ssh-keyscan -t rsa example.org' to get server key"
   known_hosts:
@@ -39,26 +45,28 @@
     state: "{{ item.state }}"
     path: /root/.ssh/known_hosts
   with_items: duplicity_known_hosts
-  when: duplicity_known_hosts is defined and len(duplicity_known_hosts) > 0
+  when: duplicity_known_hosts is defined and duplicity_known_hosts|length
 
 - name: 'Add environment variables (NOT SECURE! Visible to ALL users)'
+  no_log: true
   lineinfile:
     dest: /etc/environment
     regexp: "^export {{ item.key }}="
     line: "export {{ item.key }}='{{ item.value }}'"
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   with_dict: duplicity_environment_vars
 
 - name: 'Add duplicity config'
+  no_log: true
   lineinfile:
     dest: /etc/duplicity/duplicity.conf
     regexp: "^export {{ item.key }}="
     line: "export {{ item.key }}='{{ item.value }}'"
     owner: root
     group: root
-    mode: 0640
+    mode: '00640'
     create: yes
     state: present
   with_dict: duplicity_config_vars
@@ -75,15 +83,31 @@
 
 - name: 'Add custom crontab jobs for duplicity'
   cron:
-    user: "{{ item.user }}"
-    name: "{{ item.name }}"
+    user: "{{ item.user | default(omit) }}"
+    name: "{{ item.name | default(omit) }}"
     day: "{{ item.day | default('*') }}"
     hour: "{{ item.hour | default('*') }}"
     minute: "{{ item.minute | default('*') }}"
     month: "{{ item.month | default('*') }}"
     weekday: "{{ item.weekday | default('*') }}"
-    job: "{% if item.source is defined %}source {{ item.source }} && {% endif %} {{ item.command }}"
+#    job: "{% if item.source is defined %}source='{{ item.source }}'; {% endif %} command='{{ item.command }}'; /usr/local/bin/cron-wrapper.sh"
+    job: "{% if item.source is defined %}source {{ item.source }} && {% endif %} {{ item.command | default(omit) }}"
     state: "{{ item.state | default('present') }}"
-    cron_file: "{{ item.cron_file | default(omit) }}"
+    cron_file: "{{ item.cron_file | default('duplicity') }}"
     special_time: "{{ item.special_time | default(omit) }}"
+  when: (item.command is defined and item.command != '') or (item.state == 'absent')
   with_items: duplicity_cronjobs
+
+- name: 'Set logrotate'
+  copy:
+    src: 'logrotate'
+    dest: /etc/logrotate.d/duplicity
+    owner: root
+    group: root
+    mode: '0644'
+
+#- name: Install cron-wrapper.sh
+#  file:
+#    src: 'cron-wrapper.sh'
+#    dest: '/usr/local/bin/cron-wrapper.sh'
+#    mode: '755'

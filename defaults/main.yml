@@ -22,6 +22,12 @@ duplicity_cronjobs: []
 #    command: pwd
 #    state: absent
 
+# Globbing list
+duplicity_exclude_list:
+  - '**/.cache/**'
+  - '**/.thumbnails/**'
+  - '**/.thumbs/**'
+
 duplicity_gpg_public_keys: []
 duplicity_gpg_ownertrusts: []
 duplicity_gpg_private_keys: []

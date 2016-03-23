@@ -1,122 +1,98 @@
 #!/bin/bash
 #
-# This script needs to be renewed
+# author: @tschifftner
 #
 
 # Do not let this script run more than once
-[ `ps axu | grep -v "grep" | grep --count "duplicity"` -gt 0 ] && exit 1
+[ `ps axu | grep -v "grep" | grep --count "duplicity"` -gt 0 ] && echo 'duplicity already running' && exit 1
 
+# Export path for cronjob
+export PATH="/usr/local/bin:/usr/bin:/bin"
+
+# Load configuration
 source /etc/duplicity/duplicity.conf
-LIMIT=${LIMIT:-100}
 
-export PASSPHRASE
-export FTP_PASSWORD
+# Define variables
+INCLUDE=""
+LOGFILE=${LOGFILE:-"/var/log/duplicity/duplicity_$(date +'%Y-%m-%d_%H:%I:%S').log"}
 
-backup() {
+# make sure /var/log/duplicity exists
+mkdir -p /var/log/duplicity
 
-    echo $(date +"%d-%m-%Y") >> $LOGFILE
+# Backup everything
+backup () {
+    # Log result status
+    echo "[$(date +'%Y-%m-%d %H:%I:%S')] started" >> /var/log/duplicity.log
 
-    INCLUDE=""
-    for CDIR in $SOURCE
-    do
-        TMP=" --include  ${CDIR}"
-        INCLUDE=${INCLUDE}${TMP}
-    done
+    # Build include params
+    for CDIR in $INCLUDES; do INCLUDE="$INCLUDE --include ${CDIR}"; done
 
     # Clean things up
-    duplicity remove-older-than 2M --force --extra-clean $DEST
-    duplicity cleanup --force $DEST
+    duplicity remove-older-than 1M --force --extra-clean $SERVER
+    duplicity cleanup --force $SERVER
 
-    # backup everything except excluded, perform full backup if older than 1 month
-    CMD="duplicity $PARAMS $INCLUDE --full-if-older-than 1M --exclude '**' / $DEST >> $LOGFILE"
-    echo $CMD
-    eval $CMD
+    # Log result status
+    echo "[$(date +'%Y-%m-%d %H:%I:%S')] cleanup done" >> /var/log/duplicity.log
 
-    space >> $LOGFILE
+    # backup everything except excluded, perform full backup if older than 2 weeks
+    duplicity $PARAMS $INCLUDE --full-if-older-than 2W --exclude '**' / $SERVER >> $LOGFILE
+#    echo $CMD
+#    eval $CMD
 
-    if [ $(space_raw) -lt 10 ]; then
-       echo $(space) | mail -s "[$HOSTNAME] WARNING: Backup space full!!!!" $EMAIL
-       echo $(space) | mail -s "[$HOSTNAME] WARNING: Backup space full!!!!" $EMERGENCY_EMAIL
-    fi
-
-    # save current space in file for monit
-    echo $(space) > /var/log/backup.space
-
-    # Send email
-    if [ -n "$EMAIL" ]; then
-        mail -s "[$HOSTNAME] Backup report" $EMAIL < $LOGFILE
-    fi
+    # Log result status
+    echo "[$(date +'%Y-%m-%d %H:%I:%S')] finished" >> /var/log/duplicity.log
 }
 
+# List all files that have been backuped
 list() {
-    duplicity list-current-files $DEST
+    duplicity list-current-files $SERVER
 }
+
+# Displays duplicity backups status
+status() {
+    duplicity collection-status $SERVER
+}
+
+# Remove backups older than PERIOD (i.e. 1M, 2W, 4D)
 remove() {
-    echo "duplicity remove-older-than $1 --force --extra-clean $DEST"
-    duplicity remove-older-than $1 --force --extra-clean $DEST
+    echo "Remove backups oder than $1 in $SERVER"
+    duplicity remove-older-than $1 --force --extra-clean $SERVER
 }
+
+# Restore backups by date/time
 restore() {
     if [ $# = 2 ]; then
-       duplicity restore --file-to-restore $1 $DEST $2
+       duplicity restore --file-to-restore $1 $SERVER $2
     else
-       duplicity restore --file-to-restore $1 --time $2 $DEST $3
+       duplicity restore --file-to-restore $1 --time $2 $SERVER $3
     fi
 }
 
-status() {
-    duplicity collection-status $DEST
+# Show log file
+log() {
+    less $LOGFILE
 }
 
-space() {
-    echo "du" | /usr/bin/lftp -u "$FTP_LOGIN,$FTP_PASSWORD" "$FTP_SERVER" | awk -v LIMIT=$LIMIT '$2=="." {print ((LIMIT*1024*1024)-$1)/1024/1024 " GB backup space remaining"}'
-}
-
-space_raw() {
-    # returns free space in GB, rounded
-    echo "du" | /usr/bin/lftp -u "$FTP_LOGIN,$FTP_PASSWORD" "$FTP_SERVER" | awk -v LIMIT=$LIMIT '$2=="." {printf("%d\n", ((LIMIT*1024*1024)-$1)/1024/1024)}'
-}
-
-checkspace() {
-    if [ $(space_raw) -lt 10 ]; then
-        # failures
-        exit 1;
-    fi
-
-    # success
-    exit 0;
-}
-
-
-# Controller
-if [ "$1" = "backup" ]; then
-    backup
-elif [ "$1" = "list" ]; then
-    list
-elif [ "$1" = "space" ]; then
-    space_raw
-elif [ "$1" = "checkspace" ]; then
-    checkspace
-elif [ "$1" = "remove" ]; then
-    remove $2
-elif [ "$1" = "restore" ]; then
-    if [ $# = 3 ]; then
-        restore $2 $3
-    else
-        restore $2 $3 $4
-    fi
-elif [ "$1" = "status" ]; then
-    status
+# run script
+if [ `type -t $1`"" == 'function' ]; then
+    $1 "${@:2}"
 else
     echo "
     duptools - manage duplicity backup
 
     USAGE:
 
-    ./duptools.sh backup
-    ./duptools.sh list
-    ./duptools.sh status
-    ./duptools.sh restore file [time] dest
-    ./duptools.sh remove [time]
+    duptools backup
+    duptools list
+    duptools status
+    duptools restore file [time] dest
+    duptools remove [time]
+
+    [time]
+    a) now
+    b) 2002-01-25T07:00:00+02:00
+    c) D=Days, W=Weeks, M=Months, Y=Years, h=hours, m=minutes, s=seconds
+
     "
 fi
 

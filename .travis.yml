@@ -1,14 +1,49 @@
 ---
-language: python
-python: "2.7"
-
-# Use the new container infrastructure
 sudo: required
 dist: trusty
 
+language: python
+python: "2.7"
+
 env:
-  - SITE=test.yml ANSIBLE_VERSION=1.9.4 ENCRYPTION='--no-encryption' PATH=$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
-  - SITE=test-gpg.yml ANSIBLE_VERSION=1.9.4 ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase'
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=latest
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.1.0
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.2
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.1
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.0
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.4
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.3
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.2
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.1
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.0.1
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.8.4
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.8.3
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.8.2
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.8.1
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.8
+
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=latest
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=2.0.1.0
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=2.0.0.2
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=2.0.0.1
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=2.0.0.0
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.4
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.3
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.2
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.1
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.0.1
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.8.4
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.8.3
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.8.2
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.8.1
+#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.8
+
+#matrix:
+#  allow_failures:
+
+branches:
+  only:
+    - master
 
 # Install ansible
 addons:
@@ -19,11 +54,11 @@ addons:
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y python-lockfile
+  - sudo apt-get install -y curl
 
 install:
-  # Install ansible
-  - pip install ansible==$ANSIBLE_VERSION
+  # Install Ansible.
+  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install --no-binary ansible ansible; else pip install --no-binary ansible ansible==$ANSIBLE_VERSION; fi
 
   # Check ansible version
   - ansible --version
@@ -53,38 +88,39 @@ script:
 
   # Check if duplicity is available
   - >
-    $(which duplicity) --version
+    which duplicity
     && (echo 'duplicity is installed' && exit 0)
     || (echo 'duplicity is not installed' && exit 1)
 
-  # sleep 2 minutes to wait for cronjob
-  - sleep 2m
-
-  # Check result of cronjob
-  - >
-    sudo test -d /tmp/duplicity-backup
-    && (echo 'duplicity cron failed' && exit 0)
-    || (echo 'duplicity cron was successful' && exit 1)
-
-  # Verify backup
-  - sudo duplicity $ENCRYPTION verify file:///tmp/duplicity-backup /etc
-
-  # Try to restore
-  - sudo duplicity $ENCRYPTION file:///tmp/duplicity-backup /tmp/duplicity-restore && sudo test -d /tmp/duplicity-restore/skel
-
-  # Check result of restore process
-  - >
-    sudo test -d /tmp/duplicity-restore
-    && (echo 'duplicity cron failed' && exit 0)
-    || (echo 'duplicity cron was successful' && exit 1)
-
-  # Check if help script exists
-  - sudo test -d /usr/local/sbin/duptools
+# Other tests are not supported on travis platform
+#
+#  # sleep 2 minutes to wait for cronjob
+#  - sleep 2m
+#
+#  # Check result of cronjob
+#  - >
+#    sudo test -d /tmp/duplicity-backup
+#    && (echo 'duplicity cron failed' && exit 0)
+#    || (echo 'duplicity cron was successful' && exit 1)
+#
+#  # Verify backup
+#  - sudo duplicity $ENCRYPTION verify file:///tmp/duplicity-backup /etc
+#
+#  # Try to restore
+#  - sudo duplicity $ENCRYPTION file:///tmp/duplicity-backup /tmp/duplicity-restore && sudo test -d /tmp/duplicity-restore/skel
+#
+#  # Check result of restore process
+#  - >
+#    sudo test -d /tmp/duplicity-restore
+#    && (echo 'duplicity cron failed' && exit 0)
+#    || (echo 'duplicity cron was successful' && exit 1)
+#
+#  # Check if help script exists
+#  - sudo test -d /usr/local/sbin/duptools
 
 after_failure:
   - which duplicity
   - duplicity --version
-  -
   - echo pwd
   - ls -l /tmp/
   - cat ansible.cfg

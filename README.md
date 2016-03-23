@@ -78,6 +78,16 @@ It's recommended to put all vars in an external file.
 
 This will always result in changed!      
       
+### Duplicity variables
+```
+duplicity_config_vars:
+  SERVER: 'ftp://username@ftp.example.com/backups/'
+  PASSPHRASE: 'YourSecretPassphrase'
+  FTP_PASSWORD: '*******'
+  PARAMS: '--verbosity info --exclude-device-files --exclude-other-filesystems --exclude-if-present .duplicity-ignore --exclude-filelist /etc/duplicity/exclude.list'
+  INCLUDES: '/root /home /var/www /var/backup'
+```      
+      
 ## GPG Encryption
 
 ### Generate GPG Key-Pair
@@ -119,6 +129,16 @@ gpg --export-ownertrust > ownertrust.txt
 gpg --output FB37DF3B.private.asc --armor --export-secret-key FB37DF3B
 ```      
 
+### Known Hosts
+
+To mark hosts as known hosts
+      
+```
+duplicity_known_hosts:
+  - host: 'ftp.example.com'
+    key: 'ftp.example.com ssh-rsa AAAAB3NzaC1yc2[...]+MPw=='
+    state: 'present'
+```          
       
 ## License
 

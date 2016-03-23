@@ -1,0 +1,31 @@
+/var/log/duplicity.log {
+    weekly
+    missingok
+    rotate 8
+    size 5M
+    maxage 30
+    notifempty
+    compress
+    delaycompress
+    notifempty
+    create 0640 root root
+    sharedscripts
+}
+
+/var/log/duplicity/*.log {
+    weekly
+    missingok
+    rotate 8
+    size 5M
+    maxage 30
+    notifempty
+    compress
+    delaycompress
+    notifempty
+    create 0640 root root
+    sharedscripts
+	postrotate
+		# delete files older than 30 days
+		find /var/log/duplicity/ -type f -mtime +30 -exec /bin/rm -f {} \;
+	endscript
+}
