@@ -38,6 +38,16 @@
     group: root
     mode: '0550'
 
+- name: "Ensure /root/.ssh exists and is protected" 
+  file:
+    path: /root/.ssh
+    owner: root
+    group: root
+    mode: '0700'
+    state: directory
+  with_items: duplicity_known_hosts
+  when: duplicity_known_hosts is defined and duplicity_known_hosts|length
+
 - name: "Add servers to known hosts. Use 'ssh-keyscan -t rsa example.org' to get server key"
   known_hosts:
     host: "{{ item.host }}"

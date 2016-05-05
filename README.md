@@ -159,7 +159,7 @@ MIT / BSD
 
 # TODO
 
- - Fix task "Add servers to known hosts. Use 'ssh-keyscan -t rsa example.org' to get server key" fail if .ssh/ not exist
+ - ~~Fix task "Add servers to known hosts. Use 'ssh-keyscan -t rsa example.org' to get server key" fail if .ssh/ not exist~~
  - Fix example
  - not build duplicity, use pkges (build require many building depends)
  - add support CentOS
