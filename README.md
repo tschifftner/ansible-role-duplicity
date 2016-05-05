@@ -138,7 +138,14 @@ duplicity_known_hosts:
   - host: 'ftp.example.com'
     key: 'ftp.example.com ssh-rsa AAAAB3NzaC1yc2[...]+MPw=='
     state: 'present'
-```          
+```
+
+If you are sure that your system supports, it is possible to use ecdsa and ed25519 keys.
+
+```
+ssh-keyscan -t ecdsa ftp.example.com
+ssh-keyscan -t ed25519 ftp.example.com
+```
 
 ## Supported OS
 
