@@ -22,52 +22,56 @@ $ ansible-galaxy install tschifftner.duplicity
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
+```yaml
     - hosts: webservers
-          vars:
-            # duplictity
-            duplicity_known_hosts:
-              - host: 'example.org'
-                key: 'example.org ssh-rsa AAAAB3NzaC...+PwAK+MPw=='
-                state: present
-        
-            duplicity_config_vars:
-              FTP_SERVER: 'sftp://username@example.org/my/folder/'
-              FTP_PASSWORD: '*******'
-              DEFAULT_PARAMS: '--verbosity info --exclude-device-files --exclude-other-filesystems --exclude-if-present .duplicity-ignore'
-        
-            duplicity_cronjobs:
-              - name: 'Cleanup older than 2 months'
-                user: root
-                group: root
-                source: /etc/duplicity/duplicity.conf
-                hour: 4
-                minute: 10
-                command: >
-                  duplicity remove-older-than 2M --force --extra-clean $FTP_SERVER;
-                  duplicity cleanup --force $FTP_SERVER
-        
-              - name: 'Backup /var/www'
-                user: root
-                group: root
-                hour: 5
-                minute: 21
-                source: /etc/duplicity/duplicity.conf
-                command: duplicity $DEFAULT_PARAMS --include /var/www --full-if-older-than 1M --exclude '**' / $FTP_SERVER
+      vars:
+        # duplictity
+        duplicity_known_hosts:
+          - host: 'example.org'
+            key: 'example.org ssh-rsa AAAAB3NzaC...+PwAK+MPw=='
+            state: present
     
-          roles:
+        duplicity_config_vars:
+          FTP_SERVER: 'sftp://username@example.org/my/folder/'
+          FTP_PASSWORD: '*******'
+          DEFAULT_PARAMS: '--verbosity info --exclude-device-files --exclude-other-filesystems --exclude-if-present .duplicity-ignore'
+    
+        duplicity_cronjobs:
+          - name: 'Cleanup older than 2 months'
+            user: root
+            group: root
+            source: /etc/duplicity/duplicity.conf
+            hour: 4
+            minute: 10
+            command: >
+              duplicity remove-older-than 2M --force --extra-clean $FTP_SERVER;
+              duplicity cleanup --force $FTP_SERVER
+    
+          - name: 'Backup /var/www'
+            user: root
+            group: root
+            hour: 5
+            minute: 21
+            source: /etc/duplicity/duplicity.conf
+            command: duplicity $DEFAULT_PARAMS --include /var/www --full-if-older-than 1M --exclude '**' / $FTP_SERVER
+
+      roles:
              - { role: tschifftner.duplicity }
+```
 
 It's recommended to put all vars in an external file.
-    
+
+```yaml
     - hosts: webservers
       vars_files:
         - duplicity-settings.yml
     
       roles:
          - { role: tschifftner.duplicity }
+```
 
 ## Tips
- - Use ```ssh-keyscan -t rsa example.org``` to get ssh-key for a server (used in duplicity_known_hosts variable)
+ - Use `ssh-keyscan -t rsa example.org` to get ssh-key for a server (used in duplicity_known_hosts variable)
  - Its possible to write cronjobs in multiple lines. But this causes failure in idempotence! For example:
  
 ```
@@ -79,7 +83,7 @@ It's recommended to put all vars in an external file.
 This will always result in changed!      
       
 ### Duplicity variables
-```
+```yaml
 duplicity_config_vars:
   SERVER: 'ftp://username@ftp.example.com/backups/'
   PASSPHRASE: 'YourSecretPassphrase'
@@ -167,7 +171,7 @@ MIT / BSD
 # TODO
 
  - ~~Fix task "Add servers to known hosts. Use 'ssh-keyscan -t rsa example.org' to get server key" fail if .ssh/ not exist~~
- - Fix example
+ - ~~Fix example~~
  - not build duplicity, use pkges (build require many building depends)
  - add support CentOS
  - add more tags
