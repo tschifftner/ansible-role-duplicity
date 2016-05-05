@@ -4,6 +4,7 @@
     dest: /bin/sh
     src: bash
     state: link
+  when: duplicity_dash_to_bash is defined
 
 - name: 'Ensure /var/log/duplicity.log exists and is writable'
   file:

@@ -31,3 +31,5 @@ duplicity_exclude_list:
 duplicity_gpg_public_keys: []
 duplicity_gpg_ownertrusts: []
 duplicity_gpg_private_keys: []
+
+# If you need global reconfigure dash to bash add duplicity_dash_to_bash var for you host
