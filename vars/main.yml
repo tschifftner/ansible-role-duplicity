@@ -8,6 +8,7 @@ duplicity_apt_dependencies:
   - python-lockfile
   - python-paramiko
   - python-pip
+  - python-setuptools
   - python-pycryptopp
   - gnupg2
   - ncftp
