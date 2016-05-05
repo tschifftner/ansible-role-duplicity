@@ -137,7 +137,7 @@ gpg --output FB37DF3B.private.asc --armor --export-secret-key FB37DF3B
 
 To mark hosts as known hosts
       
-```
+```yaml
 duplicity_known_hosts:
   - host: 'ftp.example.com'
     key: 'ftp.example.com ssh-rsa AAAAB3NzaC1yc2[...]+MPw=='
