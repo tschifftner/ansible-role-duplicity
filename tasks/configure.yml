@@ -4,7 +4,7 @@
     dest: /bin/sh
     src: bash
     state: link
-  when: '{{duplicity_dash_to_bash is defined}}'
+  when: duplicity_dash_to_bash is defined
 
 - name: 'Ensure /var/log/duplicity.log exists and is writable'
   file:
@@ -47,7 +47,7 @@
     mode: '0700'
     state: directory
   with_items: '{{duplicity_known_hosts}}'
-  when: '{{duplicity_known_hosts is defined and duplicity_known_hosts|length}}'
+  when: duplicity_known_hosts is defined and duplicity_known_hosts|length
 
 - name: "Add servers to known hosts. Use 'ssh-keyscan -t rsa example.org' to get server key"
   known_hosts:
@@ -56,7 +56,7 @@
     state: "{{ item.state }}"
     path: /root/.ssh/known_hosts
   with_items: '{{duplicity_known_hosts}}'
-  when: '{{duplicity_known_hosts is defined and duplicity_known_hosts|length}}'
+  when: duplicity_known_hosts is defined and duplicity_known_hosts|length
 
 - name: 'Add environment variables (NOT SECURE! Visible to ALL users)'
   no_log: true
