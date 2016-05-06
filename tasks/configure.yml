@@ -106,7 +106,7 @@
     state: "{{ item.state | default('present') }}"
     cron_file: "{{ item.cron_file | default('duplicity') }}"
     special_time: "{{ item.special_time | default(omit) }}"
-  when: '{{(item.command is defined and item.command != '') or (item.state == 'absent')}}'
+  when: (item.command is defined and item.command != '') or (item.state == 'absent')
   with_items: '{{duplicity_cronjobs}}'
 
 - name: 'Set logrotate'

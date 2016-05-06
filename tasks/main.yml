@@ -1,7 +1,7 @@
 ---
 - name: 'Get current version'
   shell: duplicity --version
-  register: '{{current_duplicity_version}}'
+  register: current_duplicity_version
   ignore_errors: true
   changed_when: false
 
