@@ -1,16 +1,16 @@
 ---
 - name: 'Get current version'
   shell: duplicity --version
-  register: current_duplicity_version
+  register: '{{current_duplicity_version}}'
   ignore_errors: true
   changed_when: false
 
 - set_fact:
     current_duplicity_version: "{% if current_duplicity_version.stdout is defined %}{{ current_duplicity_version.stdout | replace('duplicity ', '') }}{% endif %}"
-#- debug: var=current_duplicity_version
+#- debug: var='{{current_duplicity_version}}'
 
 - include: install.yml
-  when: current_duplicity_version is not defined or duplicity_version is not defined or current_duplicity_version != duplicity_version
+  when: '{{current_duplicity_version is not defined or duplicity_version is not defined or current_duplicity_version != duplicity_version}}'
   tags: ['duplicity-install']
 
 - include: gpg.yml

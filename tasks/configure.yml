@@ -4,7 +4,7 @@
     dest: /bin/sh
     src: bash
     state: link
-  when: duplicity_dash_to_bash is defined
+  when: '{{duplicity_dash_to_bash is defined}}'
 
 - name: 'Ensure /var/log/duplicity.log exists and is writable'
   file:
@@ -46,8 +46,8 @@
     group: root
     mode: '0700'
     state: directory
-  with_items: duplicity_known_hosts
-  when: duplicity_known_hosts is defined and duplicity_known_hosts|length
+  with_items: '{{duplicity_known_hosts}}'
+  when: '{{duplicity_known_hosts is defined and duplicity_known_hosts|length}}'
 
 - name: "Add servers to known hosts. Use 'ssh-keyscan -t rsa example.org' to get server key"
   known_hosts:
@@ -55,8 +55,8 @@
     key: "{{ item.key }}"
     state: "{{ item.state }}"
     path: /root/.ssh/known_hosts
-  with_items: duplicity_known_hosts
-  when: duplicity_known_hosts is defined and duplicity_known_hosts|length
+  with_items: '{{duplicity_known_hosts}}'
+  when: '{{duplicity_known_hosts is defined and duplicity_known_hosts|length}}'
 
 - name: 'Add environment variables (NOT SECURE! Visible to ALL users)'
   no_log: true
@@ -67,7 +67,7 @@
     owner: root
     group: root
     mode: '0644'
-  with_dict: duplicity_environment_vars
+  with_dict: '{{duplicity_environment_vars}}'
 
 - name: 'Add duplicity config'
   no_log: true
@@ -80,7 +80,7 @@
     mode: '00640'
     create: yes
     state: present
-  with_dict: duplicity_config_vars
+  with_dict: '{{duplicity_config_vars}}'
 
 - name: 'Add custom duplicity scripts'
   template:
@@ -90,7 +90,7 @@
     owner: "{{ item.owner }}"
     group: "{{ item.group }}"
     mode: "{{ item.mode | default(0550) }}"
-  with_items: duplicity_backup_scripts
+  with_items: '{{duplicity_backup_scripts}}'
 
 - name: 'Add custom crontab jobs for duplicity'
   cron:
@@ -106,8 +106,8 @@
     state: "{{ item.state | default('present') }}"
     cron_file: "{{ item.cron_file | default('duplicity') }}"
     special_time: "{{ item.special_time | default(omit) }}"
-  when: (item.command is defined and item.command != '') or (item.state == 'absent')
-  with_items: duplicity_cronjobs
+  when: '{{(item.command is defined and item.command != '') or (item.state == 'absent')}}'
+  with_items: '{{duplicity_cronjobs}}'
 
 - name: 'Set logrotate'
   copy:
