@@ -38,6 +38,7 @@
     owner: root
     group: root
     mode: '0550'
+  when: duplicity_tools is defined
 
 - name: "Ensure /root/.ssh exists and is protected" 
   file:
@@ -90,6 +91,7 @@
     owner: "{{ item.owner }}"
     group: "{{ item.group }}"
     mode: "{{ item.mode | default(0550) }}"
+  when: duplicity_tools is defined
   with_items: '{{duplicity_backup_scripts}}'
 
 - name: 'Add custom crontab jobs for duplicity'
