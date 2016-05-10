@@ -174,3 +174,4 @@ MIT / BSD
  - add support CentOS
  - add more tags
  - remove custome sh (install only set tag)
+ - Fix reinstall and install another version, now not rewrited file /usr/local/bin/duplicity and not removed pip uninstal duplicity

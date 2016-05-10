@@ -1,12 +1,12 @@
 ---
 - name: 'Get current version'
-  shell: duplicity --version
+  shell: duplicity --version | cut -f2 -d ' '
   register: current_duplicity_version
   ignore_errors: true
   changed_when: false
 
 - set_fact:
-    current_duplicity_version: "{% if current_duplicity_version.stdout is defined %}{{ current_duplicity_version.stdout | replace('duplicity ', '') }}{% endif %}"
+    current_duplicity_version: '{{current_duplicity_version.stdout}}'
 #- debug: var='{{current_duplicity_version}}'
 
 - include: install.yml
@@ -19,3 +19,11 @@
 
 - include: configure.yml
   tags: ['duplicity-configure']
+
+- name: 'Check existing duplicity version'
+  shell: duplicity --version | cut -f2 -d ' '
+  register: final_duplicity_version
+  ignore_errors: true
+
+- fail: msg="Fail if existing duplicity version '{{final_duplicity_version.stdout}}' not = '{{duplicity_version}}'"
+  when: final_duplicity_version.stdout != duplicity_version

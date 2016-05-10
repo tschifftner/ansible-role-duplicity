@@ -38,6 +38,3 @@
   args:
     chdir: "{{ duplicity_workspace }}/duplicity-{{ duplicity_version }}"
     creates: /usr/local/bin/duplicity
-
-- name: 'Fail if duplicity does not exist'
-  shell: duplicity --version
