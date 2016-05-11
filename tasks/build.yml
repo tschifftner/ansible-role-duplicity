@@ -1,10 +1,4 @@
 ---
-- name: 'Install build pkg dependencies'
-  package:
-    pkg: "{{ item }}"
-    state: present
-  with_items: '{{duplicity_build_dependencies}}'
-
 - name: 'Create duplicity dir'
   file:
     path: "{{ duplicity_workspace }}/duplicity"

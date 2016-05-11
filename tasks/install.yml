@@ -22,6 +22,13 @@
   with_items: '{{duplicity_pkg_dependencies}}'
   when: duplicity_install_type == "pkg"
 
+- name: 'Install build pkg dependencies'
+  package:
+    pkg: "{{ item }}"
+    state: present
+  with_items: '{{duplicity_build_dependencies}}'
+  when: duplicity_install_type == "build"
+
 - name: 'Install pip packages'
   pip:
     name: "{{ item.name }}"
