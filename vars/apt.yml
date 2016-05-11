@@ -13,3 +13,5 @@ duplicity_pkg_dependencies:
   - librsync-dev
   - mailutils
   - build-essential
+
+duplicity_bin: /usr/local/bin/duplicity

@@ -1,15 +1,19 @@
 ---
 duplicity_pkg_dependencies:
   - python-boto
-  - python-dev
+  - python-devel
   - python-lockfile
   - python-paramiko
   - python-pip
   - python-setuptools
-  - python-pycryptopp
+  - redhat-rpm-config
+  - cryptopp
   - gnupg2
   - ncftp
   - lftp
-  - librsync-dev
-  - mailutils
-  - build-essential
+  - librsync-devel
+  - libselinux-python
+  - mailx
+  - gcc
+
+duplicity_bin: /usr/bin/duplicity

@@ -6,9 +6,9 @@
     cache_valid_time: 86400
   when: ansible_pkg_mgr == 'apt'
 
-- name: 'Update yum package cache'
-  yum: update_cache=yes state=present
-  when: ansible_pkg_mgr == 'yum'
+- name: 'Fix dnf ansible/issues/14427'
+  shell: dnf install -y python-dnf
+  when: ansible_pkg_mgr == 'dnf'
 
 - include_vars: "{{ item }}"
   with_first_found:
@@ -47,4 +47,4 @@
   shell: python setup.py install
   args:
     chdir: "{{ duplicity_workspace }}/duplicity-{{ duplicity_version }}"
-    creates: /usr/local/bin/duplicity
+    creates: "{{ duplicity_bin }}"

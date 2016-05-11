@@ -153,10 +153,9 @@ ssh-keyscan -t ed25519 ftp.example.com
 
 ## Supported OS
 
-Ansible          | Debian Jessie    | Ubuntu 16.04    | Ubuntu 14.04    | Ubuntu 12.04
-:--------------: | :--------------: | :-------------: | :-------------: | :-------------: 
-1.9              | Yes              | Yes             | Yes             | Yes
-2.0              | Yes              | Yes             | Yes             | Yes
+Ansible          | Debian Jessie    | CentOS 7        | Ubuntu 16.04    | Ubuntu 14.04    | Ubuntu 12.04    | Fedora 23
+:--------------: | :--------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------:
+2.0              | Yes              | Yes             | Yes             | Yes             | Yes             | Yes
      
 ## License
 
@@ -171,7 +170,7 @@ MIT / BSD
  - ~~Fix task "Add servers to known hosts. Use 'ssh-keyscan -t rsa example.org' to get server key" fail if .ssh/ not exist~~
  - ~~Fix example~~
  - not build duplicity, use pkges (build require many building depends)
- - add support CentOS
+ - ~~add support CentOS~~
  - add more tags
  - remove custome sh (install only set tag)
  - Fix reinstall and install another version, now not rewrited file /usr/local/bin/duplicity and not removed pip uninstal duplicity
