@@ -20,31 +20,10 @@
     pkg: "{{ item }}"
     state: present
   with_items: '{{duplicity_pkg_dependencies}}'
+  when: duplicity_install_type == "pkg"
 
 - name: 'Install pip packages'
   pip:
     name: "{{ item.name }}"
     state: "{{ item.state}}"
   with_items: '{{duplicity_pip_packages}}'
-
-- name: 'Create duplicity dir'
-  file:
-    path: "{{ duplicity_workspace }}/duplicity"
-    state: directory
-
-- name: 'Download duplicity.tar.gz'
-  get_url:
-    url: "{{ duplicity_download_url }}"
-    dest: "{{ duplicity_workspace }}/{{ duplicity_version }}.tar.gz"
-
-- name: 'Unarchive duplicity.tar.gz'
-  unarchive:
-    src: "{{ duplicity_workspace }}/{{ duplicity_version }}.tar.gz"
-    dest: "{{ duplicity_workspace }}"
-    copy: no
-
-- name: 'Install duplicity'
-  shell: python setup.py install
-  args:
-    chdir: "{{ duplicity_workspace }}/duplicity-{{ duplicity_version }}"
-    creates: "{{ duplicity_bin }}"

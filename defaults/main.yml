@@ -35,3 +35,6 @@ duplicity_gpg_private_keys: []
 # If you need global reconfigure dash to bash add duplicity_dash_to_bash var for you host
 
 # If you need duplicity_script.sh set duplicity_tools var for you host
+
+# Install type, pkg - install atp or rpm pkg, build - download tar.gz and install (python setup.py install)
+duplicity_install_type: pkg

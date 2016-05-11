@@ -1,6 +1,14 @@
 ---
 duplicity_pkg_dependencies:
   - python-boto
+  - python-lockfile
+  - python-paramiko
+  - python-pip
+  - mailutils
+  - duplicity
+
+duplicity_build_dependencies:
+  - python-boto
   - python-dev
   - python-lockfile
   - python-paramiko
