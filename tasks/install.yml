@@ -4,12 +4,22 @@
   apt:
     update_cache: yes
     cache_valid_time: 86400
+  when: ansible_pkg_mgr == 'apt'
 
-- name: 'Install dependencies'
-  apt:
+- name: 'Update yum package cache'
+  yum: update_cache=yes state=present
+  when: ansible_pkg_mgr == 'yum'
+
+- include_vars: "{{ item }}"
+  with_first_found:
+   - "{{ansible_os_family}}.yml"
+   - "{{ansible_pkg_mgr}}.yml"
+
+- name: 'Install pkg dependencies'
+  package:
     pkg: "{{ item }}"
     state: present
-  with_items: '{{duplicity_apt_dependencies}}'
+  with_items: '{{duplicity_pkg_dependencies}}'
 
 - name: 'Install pip packages'
   pip:

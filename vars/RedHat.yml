@@ -1,0 +1,15 @@
+---
+duplicity_pkg_dependencies:
+  - python-boto
+  - python-dev
+  - python-lockfile
+  - python-paramiko
+  - python-pip
+  - python-setuptools
+  - python-pycryptopp
+  - gnupg2
+  - ncftp
+  - lftp
+  - librsync-dev
+  - mailutils
+  - build-essential
