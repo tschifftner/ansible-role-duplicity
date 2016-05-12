@@ -28,6 +28,7 @@
   shell: duplicity --version | cut -f2 -d ' '
   register: final_duplicity_version
   ignore_errors: true
+  changed_when: false
 
 - fail: msg="Fail if existing duplicity version '{{final_duplicity_version.stdout}}' not = '{{duplicity_version}}'"
   when: final_duplicity_version.stdout != duplicity_version
