@@ -3,6 +3,7 @@
   remote_user: root
 
   vars:
+    duplicity_version: 0.6.23
     duplicity_known_hosts:
       - host: 'localhost'
         key: 'localhost ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBJ8pPoZomzmnGWI4I0qV3GGPcxE72uKHunwOWAq11F6uE+pEVgLrEIA/jmzViSxQHrZ7QomvRHba9DNwTsTz89w='
