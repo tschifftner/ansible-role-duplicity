@@ -1,6 +1,6 @@
 ---
 - hosts: localhost
-  remote_user: root
+  become: yes
 
   vars:
     duplicity_gpg_public_keys:
