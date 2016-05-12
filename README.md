@@ -167,9 +167,4 @@ MIT / BSD
 
 # TODO
 
- - ~~Fix task "Add servers to known hosts. Use 'ssh-keyscan -t rsa example.org' to get server key" fail if .ssh/ not exist~~
- - ~~Fix example~~
- - ~~not build duplicity, use pkges (build require many building depends)~~
- - ~~add support CentOS~~
- - ~~remove custome sh (install only set var)~~
  - Fix reinstall and install another version, now not rewrited file /usr/local/bin/duplicity and not removed pip uninstal duplicity
