@@ -10,7 +10,7 @@
     path: /var/log/duplicity.log
     owner: root
     group: root
-    mode: '0755'
+    mode: '0644'
     state: touch
   changed_when: false
 
@@ -28,7 +28,7 @@
     dest: /etc/duplicity/exclude.list
     owner: root
     group: root
-    mode: '0750'
+    mode: '0640'
 
 - name: 'Ensure backup script is latest version'
   copy:
