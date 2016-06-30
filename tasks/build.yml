@@ -16,7 +16,7 @@
     copy: no
 
 - name: 'Install duplicity'
-  shell: python setup.py install
+  command: python setup.py install
   args:
     chdir: "{{ duplicity_workspace }}/duplicity-{{ duplicity_version }}"
     creates: "{{ duplicity_bin }}"
