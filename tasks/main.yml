@@ -1,21 +1,34 @@
 ---
 - name: 'Get current version'
-  shell: duplicity --version
+  shell: duplicity --version | cut -f2 -d ' '
   register: current_duplicity_version
   ignore_errors: true
   changed_when: false
 
 - set_fact:
-    current_duplicity_version: "{% if current_duplicity_version.stdout is defined %}{{ current_duplicity_version.stdout | replace('duplicity ', '') }}{% endif %}"
-- debug: var=current_duplicity_version
+    current_duplicity_version: '{{current_duplicity_version.stdout}}'
+#- debug: var='{{current_duplicity_version}}'
 
 - include: install.yml
   when: current_duplicity_version is not defined or duplicity_version is not defined or current_duplicity_version != duplicity_version
   tags: ['duplicity-install']
 
+- include: build.yml
+  when: duplicity_install_type == "build"
+  tags: ['duplicity-install']
+
 - include: gpg.yml
-  when: "{{ duplicity_gpg_public_keys|length or duplicity_gpg_private_keys|length or duplicity_gpg_ownertrusts|length }}"
+  when: duplicity_gpg_public_keys|length or duplicity_gpg_private_keys|length or duplicity_gpg_ownertrusts|length
   tags: ['duplicity-gpg']
 
 - include: configure.yml
   tags: ['duplicity-configure']
+
+- name: 'Check existing duplicity version'
+  shell: duplicity --version | cut -f2 -d ' '
+  register: final_duplicity_version
+  ignore_errors: true
+  changed_when: false
+
+- fail: msg="Fail if existing duplicity version '{{final_duplicity_version.stdout}}' not = '{{duplicity_version}}'"
+  when: final_duplicity_version.stdout != duplicity_version

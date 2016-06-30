@@ -1,8 +1,14 @@
 ---
 - hosts: localhost
-  remote_user: root
+  become: yes
 
   vars:
+    duplicity_version: 0.6.23
+    duplicity_known_hosts:
+      - host: 'localhost'
+        key: 'localhost ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBJ8pPoZomzmnGWI4I0qV3GGPcxE72uKHunwOWAq11F6uE+pEVgLrEIA/jmzViSxQHrZ7QomvRHba9DNwTsTz89w='
+        state: present
+
     duplicity_config_vars:
       SERVER: 'file:///tmp/duplicity-backup/'
       DEFAULT_PARAMS: '--verbosity info --exclude-device-files --exclude-other-filesystems --exclude-if-present .duplicity-ignore'

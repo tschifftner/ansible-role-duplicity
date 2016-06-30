@@ -11,11 +11,6 @@ env:
   - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.2
   - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.1
   - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.0
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.4
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.3
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.2
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.1
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=1.9.0.1
 
 #  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=latest
 #  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=2.0.1.0
@@ -67,11 +62,11 @@ script:
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
 
   # Run the role/playbook with ansible-playbook.
-  - ansible-playbook -i tests/inventory tests/$SITE --connection=local --sudo
+  - ansible-playbook -i tests/inventory tests/$SITE --connection=local --become
 
   # Run the role/playbook again, checking to make sure it's idempotent.
   - >
-    ansible-playbook -i tests/inventory tests/$SITE --connection=local --sudo
+    ansible-playbook -i tests/inventory tests/$SITE --connection=local --become
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)

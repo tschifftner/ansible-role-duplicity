@@ -11,17 +11,17 @@
   shell: "echo '{{ lookup('file', item) }}' | gpg --import && touch {{ duplicity_lock_directory }}/{{ item | basename }}"
   args:
     creates: "{{ duplicity_lock_directory }}/{{ item | basename }}"
-  with_items: duplicity_gpg_public_keys
+  with_items: '{{duplicity_gpg_public_keys}}'
 
 - name: import ownertrusts
   shell: "echo '{{ lookup('file', item) }}' | gpg --import-ownertrust && touch {{ duplicity_lock_directory }}/{{ item | basename }}"
   args:
     creates: "{{ duplicity_lock_directory }}/{{ item | basename }}"
   notify: update trustdb
-  with_items: duplicity_gpg_ownertrusts
+  with_items: '{{duplicity_gpg_ownertrusts}}'
 
 - name: import private keys
   shell: "echo '{{ lookup('file', item) }}' | gpg --allow-secret-key-import --import && touch {{ duplicity_lock_directory }}/{{ item | basename }}"
   args:
     creates: "{{ duplicity_lock_directory }}/{{ item | basename }}"
-  with_items: duplicity_gpg_private_keys
+  with_items: '{{duplicity_gpg_private_keys}}'

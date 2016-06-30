@@ -2,19 +2,6 @@
 # vars file for ansible-role-duplicity
 duplicity_download_url: "https://code.launchpad.net/duplicity/0.7-series/{{ duplicity_version }}/+download/duplicity-{{ duplicity_version }}.tar.gz"
 duplicity_workspace: '/opt'
-duplicity_apt_dependencies:
-  - python-boto
-  - python-dev
-  - python-lockfile
-  - python-paramiko
-  - python-pip
-  - python-pycryptopp
-  - gnupg2
-  - ncftp
-  - lftp
-  - librsync-dev
-  - mailutils
-  - build-essential
 
 duplicity_pip_packages:
   - { name: pip, state: latest }

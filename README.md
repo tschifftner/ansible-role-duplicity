@@ -22,52 +22,56 @@ $ ansible-galaxy install tschifftner.duplicity
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
+```yaml
     - hosts: webservers
-          vars:
-            # duplictity
-            duplicity_known_hosts:
-              - host: 'example.org'
-                key: 'example.org ssh-rsa AAAAB3NzaC...+PwAK+MPw=='
-                state: present
-        
-            duplicity_config_vars:
-              FTP_SERVER: 'sftp://username@example.org/my/folder/'
-              FTP_PASSWORD: '*******'
-              DEFAULT_PARAMS: '--verbosity info --exclude-device-files --exclude-other-filesystems --exclude-if-present .duplicity-ignore'
-        
-            duplicity_cronjobs:
-              - name: 'Cleanup older than 2 months'
-                user: root
-                group: root
-                source: /etc/duplicity/duplicity.conf
-                hour: 4
-                minute: 10
-                command: >
-                  duplicity remove-older-than 2M --force --extra-clean $FTP_SERVER;
-                  duplicity cleanup --force $FTP_SERVER
-        
-              - name: 'Backup /var/www'
-                user: root
-                group: root
-                hour: 5
-                minute: 21
-                source: /etc/duplicity/duplicity.conf
-                command: duplicity $DEFAULT_PARAMS --include /var/www --full-if-older-than 1M --exclude '**' / $FTP_SERVER
+      vars:
+        # duplictity
+        duplicity_known_hosts:
+          - host: 'example.org'
+            key: 'example.org ssh-rsa AAAAB3NzaC...+PwAK+MPw=='
+            state: present
     
-          roles:
+        duplicity_config_vars:
+          FTP_SERVER: 'sftp://username@example.org/my/folder/'
+          FTP_PASSWORD: '*******'
+          DEFAULT_PARAMS: '--verbosity info --exclude-device-files --exclude-other-filesystems --exclude-if-present .duplicity-ignore'
+    
+        duplicity_cronjobs:
+          - name: 'Cleanup older than 2 months'
+            user: root
+            group: root
+            source: /etc/duplicity/duplicity.conf
+            hour: 4
+            minute: 10
+            command: >
+              duplicity remove-older-than 2M --force --extra-clean $FTP_SERVER;
+              duplicity cleanup --force $FTP_SERVER
+    
+          - name: 'Backup /var/www'
+            user: root
+            group: root
+            hour: 5
+            minute: 21
+            source: /etc/duplicity/duplicity.conf
+            command: duplicity $DEFAULT_PARAMS --include /var/www --full-if-older-than 1M --exclude '**' / $FTP_SERVER
+
+      roles:
              - { role: tschifftner.duplicity }
+```
 
 It's recommended to put all vars in an external file.
-    
+
+```yaml
     - hosts: webservers
       vars_files:
         - duplicity-settings.yml
     
       roles:
          - { role: tschifftner.duplicity }
+```
 
 ## Tips
- - Use ```ssh-keyscan -t rsa example.org``` to get ssh-key for a server (used in duplicity_known_hosts variable)
+ - Use `ssh-keyscan -t rsa example.org` to get ssh-key for a server (used in duplicity_known_hosts variable)
  - Its possible to write cronjobs in multiple lines. But this causes failure in idempotence! For example:
  
 ```
@@ -79,7 +83,7 @@ It's recommended to put all vars in an external file.
 This will always result in changed!      
       
 ### Duplicity variables
-```
+```yaml
 duplicity_config_vars:
   SERVER: 'ftp://username@ftp.example.com/backups/'
   PASSPHRASE: 'YourSecretPassphrase'
@@ -133,21 +137,25 @@ gpg --output FB37DF3B.private.asc --armor --export-secret-key FB37DF3B
 
 To mark hosts as known hosts
       
-```
+```yaml
 duplicity_known_hosts:
   - host: 'ftp.example.com'
     key: 'ftp.example.com ssh-rsa AAAAB3NzaC1yc2[...]+MPw=='
     state: 'present'
-```          
+```
+
+If you are sure that your system supports, it is possible to use ecdsa and ed25519 keys.
+
+```
+ssh-keyscan -t ecdsa ftp.example.com
+ssh-keyscan -t ed25519 ftp.example.com
+```
 
 ## Supported OS
 
-Ansible          | Debian Jessie    | Ubuntu 14.04    | Ubuntu 12.04
-:--------------: | :--------------: | :-------------: | :-------------: 
-1.9              | Yes              | Yes             | Yes
-2.0.1*           | Yes              | Yes             | Yes
-
-*) 2.0.0.0, 2.0.0.1, 2.0.0.2 are not supported!
+Ansible          | Debian Jessie    | CentOS 7        | Ubuntu 16.04    | Ubuntu 14.04    | Ubuntu 12.04    | Fedora 23
+:--------------: | :--------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------:
+2.0              | Yes              | Yes             | Yes             | Yes             | Yes             | Yes
      
 ## License
 
@@ -156,3 +164,7 @@ MIT / BSD
 ## Author Information
 
  - Tobias Schifftner, @tschifftner
+
+# TODO
+
+ - Fix reinstall and install another version, now not rewrited file /usr/local/bin/duplicity and not removed pip uninstal duplicity
