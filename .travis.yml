@@ -7,6 +7,8 @@ python: "2.7"
 
 env:
   - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=latest
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.1.0.0
+  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.2.0
   - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.1.0
   - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.2
   - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.1
