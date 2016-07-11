@@ -7,14 +7,8 @@
   when: ansible_pkg_mgr == 'apt'
 
 - name: 'Fix dnf ansible/issues/14427'
-  command: dnf install -y python-dnf
+  shell: dnf install -y python-dnf
   when: ansible_pkg_mgr == 'dnf'
-
-- name: Include os specific variables
-  include_vars: "{{ item }}"
-  with_first_found:
-   - "{{ansible_os_family}}.yml"
-   - "{{ansible_pkg_mgr}}.yml"
 
 - name: 'Install pkg dependencies'
   package:

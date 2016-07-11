@@ -10,6 +10,12 @@
     current_duplicity_version: '{{current_duplicity_version.stdout}}'
 #- debug: var='{{current_duplicity_version}}'
 
+- name: Include os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+   - "{{ansible_os_family}}.yml"
+   - "{{ansible_pkg_mgr}}.yml"
+
 - include: install.yml
   when: current_duplicity_version is not defined or duplicity_version is not defined or current_duplicity_version != duplicity_version
   tags: ['duplicity-install']
