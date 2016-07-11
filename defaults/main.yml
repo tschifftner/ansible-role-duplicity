@@ -1,5 +1,5 @@
 ---
-duplicity_version: "0.7.06"
+duplicity_version: "0.7.08"
 
 duplicity_backup_scripts: []
 #- { src: duplicity_script.sh, dest: /usr/local/sbin/duplicity_script, backup: yes, user: root, group: root, mode: 0500 }
