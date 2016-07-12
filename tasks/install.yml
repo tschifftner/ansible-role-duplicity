@@ -9,6 +9,7 @@
 - name: 'Fix dnf ansible/issues/14427'
   shell: dnf install -y python-dnf
   when: ansible_pkg_mgr == 'dnf'
+  tags: ['skip_ansible_lint']
 
 - name: 'Install pkg dependencies'
   package:
