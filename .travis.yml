@@ -14,6 +14,14 @@ env:
   - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.1
   - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.0
 
+  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=latest
+  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.1.0.0
+  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.2.0
+  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.1.0
+  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.2
+  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.1
+  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.0
+
 #  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=latest
 #  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=2.0.1.0
 #  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=2.0.0.2
