@@ -156,6 +156,7 @@ ssh-keyscan -t ed25519 ftp.example.com
 Ansible          | Debian Jessie    | CentOS 7        | Ubuntu 16.04    | Ubuntu 14.04    | Ubuntu 12.04    | Fedora 23
 :--------------: | :--------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------:
 2.0              | Yes              | Yes             | Yes             | Yes             | Yes             | Yes
+2.1              | Yes              | Yes             | Yes             | Yes             | Yes             | Yes
      
 ## License
 
