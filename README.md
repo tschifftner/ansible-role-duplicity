@@ -6,7 +6,7 @@ Installs duplicity from source and handles backup tasks on Debian/Ubuntu linux s
 
 ## Requirements
 
-ansible 1.9+
+ansible 2.0+
 
 ## Dependencies
 
@@ -144,11 +144,38 @@ duplicity_known_hosts:
     state: 'present'
 ```
 
-If you are sure that your system supports, it is possible to use ecdsa and ed25519 keys.
+If you are sure that your system supports, it is possible to use ecdsa 
+and ed25519 keys.
 
 ```
 ssh-keyscan -t ecdsa ftp.example.com
 ssh-keyscan -t ed25519 ftp.example.com
+```
+
+## Duptools
+
+Duptools is a helper script to manage backups. It is installed by 
+default but can be disabled by ```duplicity_install_duptools: false```
+
+### Run duptools
+
+Just type ```duptools``` on the command line to get available options:
+
+```
+    duptools - manage duplicity backup
+
+    USAGE:
+
+    duptools backup
+    duptools list
+    duptools status
+    duptools restore file [time] dest
+    duptools remove [time]
+
+    [time]
+    a) now
+    b) 2002-01-25T07:00:00+02:00
+    c) D=Days, W=Weeks, M=Months, Y=Years, h=hours, m=minutes, s=seconds
 ```
 
 ## Supported OS

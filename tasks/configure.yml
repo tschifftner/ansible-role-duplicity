@@ -1,5 +1,5 @@
 ---
-- name: reconfigure dash to bash
+- name: 'Reconfigure dash to bash'
   file:
     dest: /bin/sh
     src: bash
@@ -38,7 +38,7 @@
     owner: root
     group: root
     mode: '0550'
-  when: duplicity_tools is defined
+  when: duplicity_install_duptools
 
 - name: "Ensure /root/.ssh exists and is protected"
   file:

@@ -22,7 +22,7 @@
   tags: ['duplicity-install']
 
 - include: build.yml
-  when: duplicity_install_type == "build"
+  when: duplicity_install_type == "build" and (current_duplicity_version is not defined or duplicity_version is not defined or current_duplicity_version != duplicity_version)
   tags: ['duplicity-install']
 
 - include: gpg.yml
@@ -38,6 +38,7 @@
   ignore_errors: true
   changed_when: false
 
-- name: Fails when existing version is not requested version
-  fail: msg="Fail if existing duplicity version '{{final_duplicity_version.stdout}}' not = '{{duplicity_version}}'"
+- name: 'Fails when existing version is not requested version'
+  fail:
+    msg: "Fail if existing duplicity version '{{final_duplicity_version.stdout}}' not = '{{duplicity_version}}'"
   when: final_duplicity_version.stdout != duplicity_version

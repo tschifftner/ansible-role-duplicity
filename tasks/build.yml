@@ -1,4 +1,10 @@
 ---
+- name: 'Prepare upgrade if versions differ'
+  file:
+    path: "{{ duplicity_bin }}"
+    state: absent
+  when: current_duplicity_version != duplicity_version
+
 - name: 'Create duplicity dir'
   file:
     path: "{{ duplicity_workspace }}/duplicity"
