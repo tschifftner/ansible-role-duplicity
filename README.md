@@ -187,7 +187,7 @@ Ansible          | Debian Jessie    | CentOS 7        | Ubuntu 16.04    | Ubuntu
      
 ## License
 
-MIT / BSD
+[MIT License](http://choosealicense.com/licenses/mit/)
 
 ## Author Information
 
