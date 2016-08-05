@@ -81,6 +81,7 @@
     mode: '00640'
     create: yes
     state: present
+  when: item.key is defined and item.value is defined
   with_dict: '{{duplicity_config_vars}}'
 
 - name: 'Add custom duplicity scripts'
