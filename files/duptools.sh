@@ -3,9 +3,6 @@
 # author: @tschifftner
 #
 
-# Do not let this script run more than once
-[ `ps axu | grep -v "grep" | grep --count "duplicity"` -gt 0 ] && echo 'duplicity already running' && exit 1
-
 # Export path for cronjob
 export PATH="/usr/local/bin:/usr/bin:/bin"
 
@@ -15,12 +12,18 @@ source /etc/duplicity/duplicity.conf
 # Define variables
 INCLUDE=""
 LOGFILE=${LOGFILE:-"/var/log/duplicity/duplicity_$(date +'%Y-%m-%d_%H:%I:%S').log"}
+LOCKFILE=/tmp/duplicity-backup.lock
 
 # make sure /var/log/duplicity exists
 mkdir -p /var/log/duplicity
 
 # Backup everything
 backup () {
+    # Check if lockfile exists
+    if [ -f $LOCKFILE ]; then echo 'duplicity backup already running'; exit 1; fi
+
+    touch $LOCKFILE;
+
     # Log result status
     echo "[$(date +'%Y-%m-%d %H:%I:%S')] started" >> /var/log/duplicity.log
 
@@ -28,19 +31,20 @@ backup () {
     for CDIR in $INCLUDES; do INCLUDE="$INCLUDE --include ${CDIR}"; done
 
     # Clean things up
-    duplicity remove-older-than 1M --force --extra-clean $SERVER
-    duplicity cleanup --force $SERVER
+    duplicity remove-older-than 1M --force --extra-clean $SERVER >> $LOGFILE
+    duplicity cleanup --force $SERVER >> $LOGFILE
 
     # Log result status
     echo "[$(date +'%Y-%m-%d %H:%I:%S')] cleanup done" >> /var/log/duplicity.log
 
     # backup everything except excluded, perform full backup if older than 2 weeks
     duplicity $PARAMS $INCLUDE --full-if-older-than 2W --exclude '**' / $SERVER >> $LOGFILE
-#    echo $CMD
-#    eval $CMD
 
     # Log result status
     echo "[$(date +'%Y-%m-%d %H:%I:%S')] finished" >> /var/log/duplicity.log
+
+    # Remove lock file
+    rm -f $LOCKFILE
 }
 
 # List all files that have been backuped

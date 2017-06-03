@@ -104,7 +104,6 @@
     minute: "{{ item.minute | default('*') }}"
     month: "{{ item.month | default('*') }}"
     weekday: "{{ item.weekday | default('*') }}"
-#    job: "{% if item.source is defined %}source='{{ item.source }}'; {% endif %} command='{{ item.command }}'; /usr/local/bin/cron-wrapper.sh"
     job: "{% if item.source is defined %}source {{ item.source }} && {% endif %} {{ item.command | default(omit) }}"
     state: "{{ item.state | default('present') }}"
     cron_file: "{{ item.cron_file | default('duplicity') }}"
@@ -119,9 +118,3 @@
     owner: root
     group: root
     mode: '0644'
-
-#- name: Install cron-wrapper.sh
-#  file:
-#    src: 'cron-wrapper.sh'
-#    dest: '/usr/local/bin/cron-wrapper.sh'
-#    mode: '755'
