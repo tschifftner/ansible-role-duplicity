@@ -11,6 +11,19 @@
   when: ansible_pkg_mgr == 'dnf'
   tags: ['skip_ansible_lint']
 
+- name: 'Install python-fasteners when Debian Stretch'
+  apt:
+    pkg: python-fasteners
+    state: present
+  when: ansible_distribution == 'Debian' and ansible_distribution_release == 'stretch'
+
+- name: Install python-fasteners
+  pip:
+    name: 'fasteners'
+    state: present
+  when: ansible_distribution == 'Debian' and ansible_distribution_release == 'jessie'
+
+
 - name: 'Install pkg dependencies'
   package:
     pkg: "{{ item }}"

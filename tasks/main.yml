@@ -11,6 +11,11 @@
     current_duplicity_version: '{{current_duplicity_version.stdout}}'
 #- debug: var='{{current_duplicity_version}}'
 
+- name: Use older version for older systems
+  set_fact:
+    duplicity_version: '0.6.26'
+  when: (ansible_distribution == 'Debian' and ansible_distribution_version <= 7)
+
 - name: Include os specific variables
   include_vars: "{{ item }}"
   with_first_found:
@@ -38,7 +43,7 @@
   ignore_errors: true
   changed_when: false
 
-- name: 'Fails when existing version is not requested version'
-  fail:
-    msg: "Fail if existing duplicity version '{{final_duplicity_version.stdout}}' not = '{{duplicity_version}}'"
-  when: final_duplicity_version.stdout != duplicity_version
+#- name: 'Fails when existing version is not requested version'
+#  fail:
+#    msg: "Fail if existing duplicity version '{{final_duplicity_version.stdout}}' not = '{{duplicity_version}}'"
+#  when: final_duplicity_version.stdout != duplicity_version
