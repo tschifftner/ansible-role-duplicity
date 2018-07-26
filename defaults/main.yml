@@ -63,7 +63,7 @@ duplicity_pip_packages:
   - { name: pip, state: latest }
   - { name: virtualenv, state: latest }
   - { name: python-swiftclient, state: present }
-  - { name: python-keystoneclient, state: present }
+#  - { name: python-keystoneclient, state: present }
   - { name: fasteners, state: present }
 
 duplicity_lock_directory: '/opt/.gpg'
