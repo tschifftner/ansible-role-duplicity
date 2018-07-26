@@ -6,21 +6,17 @@ galaxy_info:
   description: Installs duplicity from source and handles backup tasks on Debian/Ubuntu linux servers.
   company: ambimax® GmbH
   license: MIT
-  min_ansible_version: 2.0
+  role_name: duplicity
+  min_ansible_version: 2.5
   platforms:
   - name: Debian
     versions:
     - jessie
+    - stretch
   - name: Ubuntu
     versions:
-    - trusty
     - xenial
-  - name: EL
-    versions:
-    - 7
-  - name: Fedora
-    versions:
-    - 23
+    - bionic
   galaxy_tags:
     - debian
     - ubuntu
