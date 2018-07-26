@@ -55,6 +55,7 @@ duplicity_apt_dependencies:
   - python-dev
   - python-pip
   - python-lockfile
+  - gcc
   - ssh
   - cron
 
