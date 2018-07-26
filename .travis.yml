@@ -1,133 +1,56 @@
 ---
-sudo: required
-dist: trusty
-
-language: python
-python: "2.7"
+services: docker
 
 env:
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=latest
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.1.0.0
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.2.0
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.1.0
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.2
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.1
-  - SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.0
+#  - distro: centos7
+#  - distro: centos6
+#  - distro: fedora27
+#  - distro: ubuntu1604
+#  - distro: ubuntu1404
+#  - distro: ubuntu1204
 
-  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=latest
-  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.1.0.0
-  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.2.0
-  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.1.0
-  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.2
-  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.1
-  - SITE=test-build.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.0
-
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=latest
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=2.0.1.0
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=2.0.0.2
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=2.0.0.1
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=2.0.0.0
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.4
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.3
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.2
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.1
-#  - SITE=test-gpg.yml  ENCRYPTION='91F29F5F' PASSPHRASE='ThisShouldBeYourPersonalUniquePassphrase' ANSIBLE_VERSION=1.9.0.1
-
-matrix:
-  allow_failures:
-    - env: SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.2
-    - env: SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.1
-    - env: SITE=test.yml ENCRYPTION='--no-encryption' ANSIBLE_VERSION=2.0.0.0
-
-branches:
-  only:
-    - master
-
-# Install ansible
-addons:
-  apt:
-    packages:
-    - python-pip
-    - python-lockfile
-
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y curl
-
-install:
-  # Install Ansible.
-  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install --no-binary ansible ansible; else pip install --no-binary ansible ansible==$ANSIBLE_VERSION; fi
-
-  # Check ansible version
-  - ansible --version
-
-  # Create ansible.cfg with correct roles_path
-  - printf '[defaults]\nroles_path=../' >ansible.cfg
-
-  # Install ansible-lint
-  - pip install ansible-lint
+  - distro: debian9
+  - distro: debian8
+  - distro: ubuntu1804
+  - distro: ubuntu1604
 
 script:
-  # Basic role syntax check
-  - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+  # Configure test script so we can run extra tests after playbook is run.
+  - export container_id=$(date +%s)
+  - export cleanup=false
+  - export DOCKER="docker exec --tty ${container_id} env TERM=xterm"
 
-  # Run the role/playbook with ansible-playbook.
-  - ansible-playbook -i tests/inventory tests/$SITE --connection=local --become
+  # Download test shim.
+  - wget -O ${PWD}/tests/test.sh https://gist.githubusercontent.com/tschifftner/4078cf2a8429d967d5e100649ff2caa9/raw/
+  - chmod +x ${PWD}/tests/test.sh
 
-  # Run the role/playbook again, checking to make sure it's idempotent.
-  - >
-    ansible-playbook -i tests/inventory tests/$SITE --connection=local --become
-    | grep -q 'changed=0.*failed=0'
-    && (echo 'Idempotence test: pass' && exit 0)
-    || (echo 'Idempotence test: fail' && exit 1)
+  # Run tests.
+  - ${PWD}/tests/test.sh
 
-  # ansible-lint checks for best practice
-  - ansible-lint tests/$SITE
+  - ${DOCKER} test -e /usr/local/bin/duplicity
+  - ${DOCKER} test -e /usr/local/sbin/duptools
+  - ${DOCKER} duplicity --version
+  - ${DOCKER} pip list | grep fasteners
+  - ${DOCKER} duptools status | grep 'No backup chains with active signatures found'
 
-  # Check if duplicity is available
-  - >
-    which duplicity
-    && (echo 'duplicity is installed' && exit 0)
-    || (echo 'duplicity is not installed' && exit 1)
+  # Check config
+  - ${DOCKER} cat /etc/duplicity/duplicity.conf | grep 'export PARAMS'
+  - ${DOCKER} cat /etc/duplicity/exclude.list | grep '.cache'
 
-# Other tests are currently not supported on travis platform
-#
-#  # sleep 2 minutes to wait for cronjob
-#  - sleep 2m
-#
-#  # Check result of cronjob
-#  - >
-#    sudo test -d /tmp/duplicity-backup
-#    && (echo 'duplicity cron failed' && exit 0)
-#    || (echo 'duplicity cron was successful' && exit 1)
-#
-#  # Verify backup
-#  - sudo duplicity $ENCRYPTION verify file:///tmp/duplicity-backup /etc
-#
-#  # Try to restore
-#  - sudo duplicity $ENCRYPTION file:///tmp/duplicity-backup /tmp/duplicity-restore && sudo test -d /tmp/duplicity-restore/skel
-#
-#  # Check result of restore process
-#  - >
-#    sudo test -d /tmp/duplicity-restore
-#    && (echo 'duplicity cron failed' && exit 0)
-#    || (echo 'duplicity cron was successful' && exit 1)
-#
-#  # Check if help script exists
-#  - sudo test -d /usr/local/sbin/duptools
+  # Run backup
+  - ${DOCKER} duptools backup
+  - ${DOCKER} duptools list | grep 'etc/cron.d'
+  - ${DOCKER} duptools status | grep 'Found primary backup chain with matching signature chain'
+
+  # Check cronjob
+  - ${DOCKER} test -e /etc/cron.d/duplicity
+  - ${DOCKER} cat /etc/cron.d/duplicity | grep 'source /etc/duplicity/duplicity.conf'
 
 after_failure:
-  - which duplicity
-  - duplicity --version
-  - echo pwd
-  - ls -l /tmp/
-  - cat ansible.cfg
-  - cat /home/travis/build/tschifftner/travis-tests/ansible.cfg
-  - crontab -l
-  - sudo crontab -l
-  - ls -la /tmp/duplicity-backup
-  - ls -la /tmp/duplicity-restore
-  - ansible -i 127.0.0.1, -m setup all -c local
+  - ${DOCKER} duplicity --version
+  - ${DOCKER} cat /etc/duplicity/duplicity.conf
+  - ${DOCKER} cat /etc/duplicity/exclude.list
+  - ${DOCKER} cat /usr/local/sbin/duptools
 
 notifications:
   slack: ambimax:2MlPTX9bY9aPxCPhJGxHKIT6

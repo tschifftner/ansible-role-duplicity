@@ -1,0 +1,13 @@
+---
+
+- name: 'Install dependencies'
+  apt:
+    pkg: '{{ item }}'
+    cache_valid_time: 86400
+  with_items: '{{ duplicity_apt_dependencies }}'
+
+- name: Install pip dependencies
+  pip:
+    name: '{{ item.name }}'
+    state: '{{ item.state }}'
+  with_items: '{{ duplicity_pip_packages }}'

@@ -1,6 +1,6 @@
 # Ansible Role: Install and configure duplicity
 
-[![Build Status](https://travis-ci.org/tschifftner/ansible-role-duplicity.svg)](https://travis-ci.org/tschifftner/ansible-role-duplicity)
+[![Build Status](https://travis-ci.org/tschifftner/ansible-role-duplicity.svg?branch=master)](https://travis-ci.org/tschifftner/ansible-role-duplicity)
 
 Installs duplicity from source and handles backup tasks on Debian/Ubuntu linux servers.
 
@@ -180,11 +180,15 @@ Just type ```duptools``` on the command line to get available options:
 
 ## Supported OS
 
-Ansible          | Debian Jessie    | CentOS 7        | Ubuntu 16.04    | Ubuntu 14.04    | Ubuntu 12.04    | Fedora 23
-:--------------: | :--------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------:
-2.0              | Yes              | Yes             | Yes             | Yes             | Yes             | Yes
-2.1              | Yes              | Yes             | Yes             | Yes             | Yes             | Yes
-     
+ - Debian 9 (Stretch)
+ - Debian 8 (Jessie)
+ - Ubuntu 18.04 (Bionic Beaver)
+ - Ubuntu 16.04 (Xenial Xerus)
+ 
+## Required ansible version
+
+Ansible 2.5+
+
 ## License
 
 [MIT License](http://choosealicense.com/licenses/mit/)

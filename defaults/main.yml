@@ -14,7 +14,14 @@ duplicity_environment_vars: {}
 #  PASSPHRASE: 'YOUR_PASSPHRASE'
 #  FTP_PASSWORD: 'YOUR_FTP_PASSWORD'
 
-duplicity_cronjobs: []
+duplicity_cronjobs:
+  - name: 'Full'
+    user: root
+    group: root
+    minute: '{{ 59 | random }}'
+    hour: '{{ [3,4,5]|random }}'
+    command: '/usr/local/sbin/duptools backup'
+
 #  - user: root
 #    name: "Webserver"
 #    hour: 4
@@ -39,13 +46,30 @@ duplicity_install_type: 'pkg'
 duplicity_install_duptools: true
 
 # vars file for ansible-role-duplicity
-duplicity_download_url: "https://launchpad.net/duplicity/0.7-series/{{ duplicity_version }}/+download/duplicity-{{ duplicity_version }}.tar.gz"
+duplicity_download_url: "https://code.launchpad.net/duplicity/0.7-series/{{ duplicity_version }}/+download/duplicity-{{ duplicity_version }}.tar.gz"
 duplicity_workspace: '/opt'
+
+duplicity_apt_dependencies:
+  - librsync-dev
+  - gnupg
+  - python-dev
+  - python-pip
+  - python-lockfile
+  - ssh
+  - cron
 
 duplicity_pip_packages:
   - { name: pip, state: latest }
   - { name: virtualenv, state: latest }
   - { name: python-swiftclient, state: present }
   - { name: python-keystoneclient, state: present }
+  - { name: fasteners, state: present }
 
 duplicity_lock_directory: '/opt/.gpg'
+
+duplicity_bin: /usr/local/bin/duplicity
+
+# Fasteners
+duplicity_fasteners_version: '0.14.1'
+duplicity_fasteners_download_url: 'https://github.com/harlowja/fasteners/archive/{{ fasteners_version }}.tar.gz'
+duplicity_fasteners_workspace: /opt

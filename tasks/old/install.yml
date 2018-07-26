@@ -1,0 +1,45 @@
+---
+
+- name: 'Update apt package cache'
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+  when: ansible_pkg_mgr == 'apt'
+
+- name: 'Fix dnf ansible/issues/14427'
+  shell: dnf install -y python-dnf
+  when: ansible_pkg_mgr == 'dnf'
+  tags: ['skip_ansible_lint']
+
+- name: 'Install python-fasteners when Debian Stretch'
+  apt:
+    pkg: python-fasteners
+    state: present
+  when: ansible_distribution == 'Debian' and ansible_distribution_release == 'stretch'
+
+- name: Install python-fasteners
+  pip:
+    name: 'fasteners'
+    state: present
+  when: ansible_distribution == 'Debian' and ansible_distribution_release == 'jessie'
+
+
+- name: 'Install pkg dependencies'
+  package:
+    pkg: "{{ item }}"
+    state: present
+  with_items: '{{duplicity_pkg_dependencies}}'
+  when: duplicity_install_type == "pkg"
+
+- name: 'Install build pkg dependencies'
+  package:
+    pkg: "{{ item }}"
+    state: present
+  with_items: '{{duplicity_build_dependencies}}'
+  when: duplicity_install_type == "build"
+
+- name: 'Install pip packages'
+  pip:
+    name: "{{ item.name }}"
+    state: "{{ item.state}}"
+  with_items: '{{duplicity_pip_packages}}'

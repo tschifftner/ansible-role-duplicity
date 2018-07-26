@@ -14,6 +14,18 @@ INCLUDE=""
 LOGFILE=${LOGFILE:-"/var/log/duplicity/duplicity_$(date +'%Y-%m-%d_%H:%I:%S').log"}
 LOCKFILE=/tmp/duplicity-backup.lock
 
+REMOVE_OLDER_THAN=${REMOVE_OLDER_THAN:-"1M"}
+FULL_IF_OLDER_THAN=${FULL_IF_OLDER_THAN:-"2W"}
+PARAMS=${PARAMS:-"--verbosity info --exclude-device-files --exclude-other-filesystems --exclude-if-present .duplicity-ignore"}
+
+cleanup() {
+  rm -f ${LOCKFILE}
+}
+
+error_exit() {
+  echo -e $1; exit 1;
+}
+
 # make sure /var/log/duplicity exists
 mkdir -p /var/log/duplicity
 
@@ -23,6 +35,9 @@ backup () {
     if [ -f $LOCKFILE ]; then echo 'duplicity backup already running'; exit 1; fi
 
     touch $LOCKFILE;
+    trap cleanup EXIT INT TERM QUIT
+
+    if [ -z $SERVER ]; then error_exit "Server is not defined"; fi
 
     # Log result status
     echo "[$(date +'%Y-%m-%d %H:%I:%S')] started" >> /var/log/duplicity.log
@@ -31,20 +46,17 @@ backup () {
     for CDIR in $INCLUDES; do INCLUDE="$INCLUDE --include ${CDIR}"; done
 
     # Clean things up
-    duplicity remove-older-than 1M --force --extra-clean $SERVER >> $LOGFILE
+    duplicity remove-older-than $REMOVE_OLDER_THAN --force --extra-clean $SERVER >> $LOGFILE
     duplicity cleanup --force $SERVER >> $LOGFILE
 
     # Log result status
     echo "[$(date +'%Y-%m-%d %H:%I:%S')] cleanup done" >> /var/log/duplicity.log
 
     # backup everything except excluded, perform full backup if older than 2 weeks
-    duplicity $PARAMS $INCLUDE --full-if-older-than 2W --exclude '**' / $SERVER >> $LOGFILE
+    duplicity $PARAMS $INCLUDE --full-if-older-than $FULL_IF_OLDER_THAN --exclude '**' / $SERVER >> $LOGFILE
 
     # Log result status
     echo "[$(date +'%Y-%m-%d %H:%I:%S')] finished" >> /var/log/duplicity.log
-
-    # Remove lock file
-    rm -f $LOCKFILE
 }
 
 # List all files that have been backuped

@@ -3,15 +3,24 @@
   become: yes
 
   vars:
-    duplicity_version: 0.6.23
     duplicity_known_hosts:
       - host: 'localhost'
         key: 'localhost ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBJ8pPoZomzmnGWI4I0qV3GGPcxE72uKHunwOWAq11F6uE+pEVgLrEIA/jmzViSxQHrZ7QomvRHba9DNwTsTz89w='
         state: present
 
+    duplicity_default_includes:
+      - /etc
+
     duplicity_config_vars:
       SERVER: 'file:///tmp/duplicity-backup/'
-      DEFAULT_PARAMS: '--verbosity info --exclude-device-files --exclude-other-filesystems --exclude-if-present .duplicity-ignore'
+      PARAMS: '--verbosity info --exclude-device-files --exclude-other-filesystems --exclude-if-present .duplicity-ignore --exclude-filelist /etc/duplicity/exclude.list'
+      PASSPHRASE: 'test'
+      INCLUDES: "{{ (
+          duplicity_default_includes|default([]) +
+          duplicity_group_includes|default([]) +
+          duplicity_host_includes|default([])
+          ) | unique | join(' ') }}"
+
 
     duplicity_cronjobs:
       - name: 'Backup /etc'
@@ -19,7 +28,7 @@
         group: root
         minute: '*'
         source: /etc/duplicity/duplicity.conf
-        command: $(which duplicity) --no-encryption $DEFAULT_PARAMS --include /etc --full-if-older-than 1M --exclude '**' / $SERVER
+        command: $(which duplicity) $PARAMS --include /etc --full-if-older-than 1M --exclude '**' / $SERVER
 
   roles:
-    - ansible-role-duplicity
+    - role_under_test
