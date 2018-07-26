@@ -26,9 +26,5 @@
   when: current_duplicity_version != duplicity_version
   tags: ['duplicity-install']
 
-- include: gpg.yml
-  when: duplicity_gpg_public_keys|length or duplicity_gpg_private_keys|length or duplicity_gpg_ownertrusts|length
-  tags: ['duplicity-gpg']
-
 - include: configure.yml
   tags: ['duplicity-configure']

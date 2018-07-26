@@ -94,6 +94,8 @@ duplicity_config_vars:
       
 ## GPG Encryption
 
+GPG Encryption is not supported by this role. You have to install it manually.
+
 ### Generate GPG Key-Pair
 
 To generate gpg keys use the following snippet:
